@@ -6,7 +6,7 @@
   "scripts": {
     "start": "electron ."
   },
-  "repository": "https://github.com/electron/electron-quick-start",
+  "repository": "https://github.com/alex1504/electron-roll-tool",
   "keywords": [
     "Electron",
     "quick",
