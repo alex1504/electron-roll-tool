@@ -1,0 +1,122 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="UTF-8">
+    <title>首页</title>
+    <link rel="stylesheet" href="../../../vendors/photon/css/photon.min.css">
+    <link rel="stylesheet" href="./index.css">
+</head>
+<body>
+<!-- All of the Node.js APIs are available in this renderer process. -->
+<div id="app">
+    <div class="window">
+        <header class="toolbar toolbar-header">
+            <h1 class="title">Header</h1>
+        </header>
+        <div class="window-content">
+            <div class="pane-group">
+                <!-- START Maincontent -->
+                <div class="pane">
+                    <!-- 已使用  初次使用 -->
+                    <!--<section class="guide-box">
+                        <div>
+                            <div class="item">已使用</div>
+                            <div class="item">初次使用</div>
+                        </div>
+                    </section>-->
+
+                    <!-- 选择专业班级 -->
+                    <!--<section class="select-box">
+                        <table class="table-striped">
+                            <thead>
+                            <tr>
+                                <th>名称</th>
+                                <th>创建日期</th>
+                            </tr>
+                            </thead>
+                            <tbody>
+                            <tr>
+                                <td>11计科3</td>
+                                <td>2018-4-5</td>
+                            </tr>
+                            <tr class="z-active">
+                                <td>11经管2</td>
+                                <td>2018-5-5</td>
+                            </tr>
+                            </tbody>
+                        </table>
+                        <div class="btn-box">
+                            <button class="btn btn-large btn-default">确定</button>
+                        </div>
+                    </section>-->
+
+
+                    <!-- 手动录入 excel录入 -->
+                    <!--<section class="way-box">-->
+                    <!--<div>-->
+                    <!--<div class="item">手动录入</div>-->
+                    <!--<div class="item">excel导入-->
+                    <!--<input type="file" id="excel">-->
+                    <!--</div>-->
+                    <!--</div>-->
+                    <!--</section>-->
+
+                    <!-- 手动录入 -->
+                    <!--<section class="manual-box">-->
+                    <!--manual-->
+                    <!--</section>-->
+
+                    <!-- 随机抽取 -->
+                    <section class="roll-box">
+                        <div>
+                            <h5>{{this.timer ? '正在随机筛选...' : '就是你啦！'}}</h5>
+                            <div class="info">
+                                <img class="avatar" :src="classData.details[activeIndex].avatar" alt="">
+                                <div>
+                                    <h3>{{classData.details[activeIndex].name}}</h3>
+                                    <p>{{classData.details[activeIndex].id}}</p>
+                                </div>
+                            </div>
+                            <div class="btn-box">
+                                <button class="btn btn-large btn-default" @click="toggleRoll">{{this.timer ? '停止' : '开始'}}</button>
+                            </div>
+                        </div>
+                    </section>
+                </div>
+                <!--END Maincontent-->
+
+                <!-- START Sidebar-->
+                <div class="pane-sm sidebar">
+                    <ul class="list-group">
+                        <li class="list-group-header">
+                            <input class="form-control" type="text" placeholder="Search for someone">
+                        </li>
+                        <li class="list-group-item" v-for="item,index in classData.details" :key="index">
+                            <img class="img-circle media-object pull-left" :src="item.avatar" width="32"
+                                 height="32">
+                            <div class="media-body">
+                                <strong>{{item.name}}</strong>
+                                <p>{{item.id}}</p>
+                            </div>
+                        </li>
+                    </ul>
+                </div>
+                <!-- END Sidebar -->
+            </div>
+        </div>
+        <footer class="toolbar toolbar-footer">
+            <h1 class="title">Footer</h1>
+        </footer>
+    </div>
+
+
+</div>
+
+<script src="../../../vendors/vue.min.js"></script>
+<script src="./index.js"></script>
+<script>
+    // You can also require other files to run in this process
+    require('../../../renderer.js')
+</script>
+</body>
+</html>

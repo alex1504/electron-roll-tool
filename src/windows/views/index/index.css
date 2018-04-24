@@ -1,0 +1,56 @@
+.window-content{
+    overflow-y: hidden;
+}
+.pane-sm{
+    overflow: auto;
+}
+
+
+/**/
+.guide-box,.way-box,.roll-box{
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    width: 100%;
+    height: 100%;
+}
+.guide-box>div,.way-box>div{
+    display: flex;
+}
+.guide-box .item,.way-box .item{
+    margin: 0 40px;
+}
+/**/
+.guide-box{
+}
+
+/**/
+.select-box tbody>tr.z-active{
+    background-color: #666;
+    color: #fff;
+}
+.select-box .btn-box{
+    margin-top: 30px;
+    text-align: center;
+}
+
+/**/
+.way-box{
+
+}
+
+/**/
+.roll-box .info{
+    display: flex;
+    align-items: center;
+}
+.roll-box .info .avatar{
+    width: 200px;
+    height: 200px;
+    border-radius: 50%;
+    margin-right: 20px;
+}
+.roll-box .btn-box{
+    margin-top: 20px;
+    text-align: center;
+}
