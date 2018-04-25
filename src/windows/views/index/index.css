@@ -1,56 +1,121 @@
-.window-content{
+
+.window-content {
     overflow-y: hidden;
 }
-.pane-sm{
+
+.pane-sm {
     overflow: auto;
+}
+
+.list-group-item.z-excluded {
+    background-color: #d0d0d0;
+}
+header,footer{
+    height: 44px;
+    line-height: 44px;
 }
 
 
 /**/
-.guide-box,.way-box,.roll-box{
+.guide-box, .way-box, .roll-box {
     display: flex;
     justify-content: center;
     align-items: center;
     width: 100%;
     height: 100%;
 }
-.guide-box>div,.way-box>div{
+
+.guide-box .flex-box, .way-box .flex-box {
     display: flex;
 }
-.guide-box .item,.way-box .item{
+
+.guide-box .item, .way-box .item {
     margin: 0 40px;
 }
-/**/
-.guide-box{
-}
-
-/**/
-.select-box tbody>tr.z-active{
-    background-color: #666;
-    color: #fff;
-}
-.select-box .btn-box{
+.guide-box .btn-box {
     margin-top: 30px;
     text-align: center;
 }
 
 /**/
-.way-box{
+.guide-box .item {
+    width: 150px;
+    height: 150px;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    background-color: #999;
+    text-align: center;
+    position: relative;
+}
+
+.guide-box .item .input-wrap, .guide-box .item .content-wrap {
+    position: absolute;
+    left: 0;
+    top: 0;
+    width: 100%;
+    height: 100%;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+}
+
+.guide-box .item .input-wrap {
+    opacity: 0;
+    cursor: pointer;
+}
+
+.guide-box .item .input-wrap div, .guide-box .item .input-wrap input {
+    cursor: pointer;
+    width: 100%;
+    height: 100%;
+}
+
+.guide-box .item:hover {
+    background-color: #666;
+    cursor: pointer;
+}
+
+.guide-box .iconfont {
+    font-size: 30px;
+}
+
+.guide-box .iconfont, .guide-box p {
+    color: #fff;
+    cursor: pointer;
+}
+
+/**/
+.select-box tbody > tr.z-active {
+    background-color: #666;
+    color: #fff;
+}
+
+
+.select-box .btn-box {
+    margin-top: 30px;
+    text-align: center;
+}
+
+/**/
+.way-box {
 
 }
 
 /**/
-.roll-box .info{
+.roll-box .info {
     display: flex;
     align-items: center;
 }
-.roll-box .info .avatar{
+
+.roll-box .info .avatar {
     width: 200px;
     height: 200px;
     border-radius: 50%;
     margin-right: 20px;
 }
-.roll-box .btn-box{
+
+.roll-box .btn-box {
     margin-top: 20px;
     text-align: center;
 }

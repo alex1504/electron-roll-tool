@@ -2,7 +2,8 @@
 <html>
 <head>
     <meta charset="UTF-8">
-    <title>首页</title>
+    <title>点名工具</title>
+    <link rel="stylesheet" href="http://at.alicdn.com/t/font_642408_t7c0ek79c97iizfr.css">
     <link rel="stylesheet" href="../../../vendors/photon/css/photon.min.css">
     <link rel="stylesheet" href="./index.css">
 </head>
@@ -10,23 +11,34 @@
 <!-- All of the Node.js APIs are available in this renderer process. -->
 <div id="app">
     <div class="window">
-        <header class="toolbar toolbar-header">
-            <h1 class="title">Header</h1>
-        </header>
+        <!--<header class="toolbar toolbar-header">
+            <h1 class="title">{{headerTitle}}</h1>
+        </header>-->
         <div class="window-content">
             <div class="pane-group">
                 <!-- START Maincontent -->
                 <div class="pane">
-                    <!-- 已使用  初次使用 -->
-                    <!--<section class="guide-box">
-                        <div>
-                            <div class="item">已使用</div>
-                            <div class="item">初次使用</div>
+                    <!--打开名册 导入数据-->
+                    <section class="guide-box" v-if="step==='1'">
+                        <div class="flex-box">
+                            <div class="item" @click="openExistClassData">
+                                <div>
+                                    <i class="iconfont icon-namelist"></i>
+                                    <p>打开名册</p>
+                                </div>
+                            </div>
+                            <div class="item" @click="openImportDataWay">
+                                <div>
+                                    <i class="iconfont icon-pen"></i>
+                                    <p>导入数据</p>
+                                </div>
+                            </div>
+
                         </div>
-                    </section>-->
+                    </section>
 
                     <!-- 选择专业班级 -->
-                    <!--<section class="select-box">
+                    <section class="select-box" v-if="step==='A'">
                         <table class="table-striped">
                             <thead>
                             <tr>
@@ -35,50 +47,93 @@
                             </tr>
                             </thead>
                             <tbody>
-                            <tr>
-                                <td>11计科3</td>
-                                <td>2018-4-5</td>
-                            </tr>
-                            <tr class="z-active">
-                                <td>11经管2</td>
-                                <td>2018-5-5</td>
+                            <tr :class="{'z-active': existClassData.activeIndex === index}"
+                                v-for="item,index in existClassData.result" :key="index"
+                                @click="changeClassSelect(index)">
+                                <td>{{item.name}}</td>
+                                <td>{{item.createdAt}}</td>
                             </tr>
                             </tbody>
                         </table>
                         <div class="btn-box">
-                            <button class="btn btn-large btn-default">确定</button>
+                            <button class="btn btn-large btn-default" @click="openNameList">打开名册</button>
+                            <button class="btn btn-large btn-default" @click="goBack">返回</button>
                         </div>
-                    </section>-->
-
+                    </section>
 
                     <!-- 手动录入 excel录入 -->
-                    <!--<section class="way-box">-->
-                    <!--<div>-->
-                    <!--<div class="item">手动录入</div>-->
-                    <!--<div class="item">excel导入-->
-                    <!--<input type="file" id="excel">-->
-                    <!--</div>-->
-                    <!--</div>-->
-                    <!--</section>-->
+                    <section class="guide-box" v-if="step==='B'">
+                        <div>
+                            <div class="flex-box">
+                                <div class="item">
+                                    <div>
+                                        <i class="iconfont icon-people"></i>
+                                        <p>手动录入</p>
+                                    </div>
+                                </div>
+                                <div class="item">
+                                    <div class="content-wrap">
+                                        <div>
+                                            <i class="iconfont icon-excel"></i>
+                                            <p>从Excel导入</p>
+                                        </div>
+                                    </div>
+                                    <div class="input-wrap">
+                                        <div>
+                                            <input type="file" id="excel" @change="onSelectXlsxFile">
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="btn-box">
+                                <button class="btn btn-large btn-default" @click="goBack">返回</button>
+                            </div>
+                        </div>
+                    </section>
+
+                    <!--读取成功-->
+                    <section class="guide-box" v-if="step==='B2'">
+                        <form>
+                            <div class="form-group">
+                                <label>读取成功，请为该名册命名（如:xx专业xx班名册）</label>
+                                <input type="text" class="form-control" placeholder="命名" v-model="nameListName">
+                            </div>
+                            <button class="btn btn-large btn-default" @click="confirmImport">确定</button>
+                        </form>
+                    </section>
+
+                    <section class="guide-box" v-if="step==='C'">
+                        <form>
+                            <h4>修改头像</h4>
+                            <input type="file" id="avatar" @change="readAvatarImage">
+                            <img width="150" :src="avatarPreview" alt="">
+                            <div style="margin-top: 20px;">
+                                <button class="btn btn-large btn-default" @click="confirmChangeAvatar">确定</button>
+                            </div>
+                        </form>
+                    </section>
 
                     <!-- 手动录入 -->
-                    <!--<section class="manual-box">-->
+                    <!--<section class="manual-box" v-if="step==='B1'">-->
                     <!--manual-->
                     <!--</section>-->
 
                     <!-- 随机抽取 -->
-                    <section class="roll-box">
+                    <section class="roll-box" v-if="step==='2'">
                         <div>
                             <h5>{{this.timer ? '正在随机筛选...' : '就是你啦！'}}</h5>
                             <div class="info">
-                                <img class="avatar" :src="classData.details[activeIndex].avatar" alt="">
+                                <img class="avatar" :src="rollNameList[activeIndex] && rollNameList[activeIndex].avatar"
+                                     alt="">
                                 <div>
-                                    <h3>{{classData.details[activeIndex].name}}</h3>
-                                    <p>{{classData.details[activeIndex].id}}</p>
+                                    <h3>{{rollNameList[activeIndex] && rollNameList[activeIndex].name}}</h3>
+                                    <p>{{rollNameList[activeIndex] && rollNameList[activeIndex].id}}</p>
                                 </div>
                             </div>
                             <div class="btn-box">
-                                <button class="btn btn-large btn-default" @click="toggleRoll">{{this.timer ? '停止' : '开始'}}</button>
+                                <button class="btn btn-large btn-default" @click="toggleRoll">{{this.timer ? '停止' :
+                                    '开始'}}
+                                </button>
                             </div>
                         </div>
                     </section>
@@ -89,11 +144,13 @@
                 <div class="pane-sm sidebar">
                     <ul class="list-group">
                         <li class="list-group-header">
-                            <input class="form-control" type="text" placeholder="Search for someone">
+                            <input class="form-control" type="text" placeholder="Search for someone"
+                                   v-model="searchTxt">
                         </li>
-                        <li class="list-group-item" v-for="item,index in classData.details" :key="index">
+                        <li class="list-group-item" :class="{'z-excluded': item.isExcluded}"
+                            v-for="item,index in nameList" :key="index" @click="toggleSelect(index)">
                             <img class="img-circle media-object pull-left" :src="item.avatar" width="32"
-                                 height="32">
+                                 height="32" @click.stop="openChangeAvatar(index)">
                             <div class="media-body">
                                 <strong>{{item.name}}</strong>
                                 <p>{{item.id}}</p>
@@ -105,7 +162,7 @@
             </div>
         </div>
         <footer class="toolbar toolbar-footer">
-            <h1 class="title">Footer</h1>
+            <h1 class="title">{{footerTitle}}</h1>
         </footer>
     </div>
 

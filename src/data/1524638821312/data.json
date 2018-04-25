@@ -1,0 +1,26 @@
+{
+  "name": "A专业AAA班名单",
+  "fileDir": "1524638945030",
+  "createdAt": "2018年4月25日下午2点49分",
+  "updatedAt": "2018年4月25日下午2点49分",
+  "details": [
+    {
+      "name": "薛定谔A",
+      "id": "201130220154",
+      "isExcluded": false,
+      "avatar": "../../../assets/imgs/1524649907824-22.jpg"
+    },
+    {
+      "name": "牛顿A",
+      "id": "201130220154",
+      "isExcluded": false,
+      "avatar": "https://api.adorable.io/avatars/201130220154.png"
+    },
+    {
+      "name": "法拉利A",
+      "id": "201130220152",
+      "isExcluded": false,
+      "avatar": "https://api.adorable.io/avatars/201130220152.png"
+    }
+  ]
+}
