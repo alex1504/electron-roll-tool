@@ -1,0 +1,230 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="UTF-8">
+    <title>点名工具</title>
+    <link rel="stylesheet" href="../../../vendors/photon/css/photon.min.css">
+    <!--<link rel="stylesheet" href="http://at.alicdn.com/t/font_642408_flddjgroxmuhxgvi.css">-->
+    <link rel="stylesheet" href="./index.css">
+</head>
+<body>
+<!-- All of the Node.js APIs are available in this renderer process. -->
+<div id="app">
+    <div class="window">
+        <!--<header class="toolbar toolbar-header">
+            <h1 class="title">{{headerTitle}}</h1>
+        </header>-->
+        <div class="window-content">
+            <div class="pane-group">
+                <!-- START Maincontent -->
+                <div class="pane">
+
+                    <!-- 初始导航 1 -->
+                    <section class="guide-box" v-if="step==='1'">
+                        <div class="flex-box">
+                            <div class="item" @click="openExistClassData">
+                                <div class="flex-box">
+                                    <div class="hd">
+                                        <div class="u-icon">
+                                            <i class="iconfont icon-namelist"></i>
+                                        </div>
+                                    </div>
+                                    <div class="bd desc">打开名册</div>
+                                    <div class="ft">
+                                        <i class="iconfont icon-right"></i>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="item" @click="">
+                                <div class="input-wrap">
+                                    <div>
+                                        <input type="file" id="excel" @change="onSelectXlsxFile">
+                                    </div>
+                                </div>
+                                <div class="content-wrap">
+                                    <div class="hd">
+                                        <div class="u-icon u-icon-1">
+                                            <i class="iconfont icon-excel"></i>
+                                        </div>
+                                    </div>
+                                    <div class="bd desc">Excel导入</div>
+                                    <div class="ft">
+                                        <i class="iconfont icon-right"></i>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="item" @click="openManualPage">
+                                <div class="flex-box">
+                                    <div class="hd">
+                                        <div class="u-icon u-icon-2">
+                                            <i class="iconfont icon-people"></i>
+                                        </div>
+                                    </div>
+                                    <div class="bd desc">手动录入</div>
+                                    <div class="ft">
+                                        <i class="iconfont icon-right"></i>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="item">
+                                <div class="flex-box">
+                                    <div class="hd">
+                                        <div class="u-icon u-icon-3">
+                                            <i class="iconfont icon-pen"></i>
+                                        </div>
+                                    </div>
+                                    <div class="bd desc">统计</div>
+                                    <div class="ft">
+                                        <i class="iconfont icon-right"></i>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </section>
+
+                    <!-- 名册列表 A -->
+                    <section class="select-box" v-if="step==='A'">
+                        <table class="table-striped">
+                            <thead>
+                            <tr>
+                                <th>名称</th>
+                                <th>创建日期</th>
+                            </tr>
+                            </thead>
+                            <tbody>
+                            <tr :class="{'z-active': existClassData.activeIndex === index}"
+                                v-for="item,index in existClassData.result" :key="index"
+                                @click="changeClassSelect(index)">
+                                <td>{{item.name}}</td>
+                                <td>{{item.createdAt}}</td>
+                            </tr>
+                            </tbody>
+                        </table>
+                        <div class="btn-box">
+                            <button class="btn btn-large btn-default" @click="openNameList">打开名册</button>
+                            <button class="btn btn-large btn-default" @click="deleteNameList">删除名册</button>
+                            <button class="btn btn-large btn-default" @click.prevent="goBack">返回</button>
+                        </div>
+                    </section>
+
+                    <!-- excel录入 命名名册 -->
+                    <section class="guide-box" v-if="step==='B'">
+                        <form>
+                            <div class="form-group">
+                                <label>读取成功，请为该名册命名（如:xx专业xx班名册）</label>
+                                <input type="text" class="form-control" placeholder="命名" v-model="nameListName">
+                            </div>
+                            <button class="btn btn-large btn-default" @click="confirmImportNaming">确定</button>
+                        </form>
+                    </section>
+
+                    <!-- 修改头像 -->
+                    <section class="guide-box" v-if="step==='E'">
+                        <form>
+                            <h4>修改学生 {{rollNameList[avatarChangeIndex] && rollNameList[avatarChangeIndex].name}} 的头像</h4>
+                            <input type="file" id="avatar" @change="readAvatarImage">
+                            <img width="150" :src="avatarPreview" alt="">
+                            <div style="margin-top: 20px;">
+                                <button class="btn btn-large btn-default" @click="confirmChangeAvatar">确定</button>
+                                <button class="btn btn-large btn-default" @click.prevent="goBack('2')">返回</button>
+                            </div>
+                        </form>
+                    </section>
+
+                    <!--手动录入 -->
+                    <section class="manual-box" v-if="step==='C'">
+                        <div class="form-wrap">
+                            <form class="form-box" v-for="item,index in studentsForm" :key="index">
+                                <div class="form-group">
+                                    <label>学生姓名</label>
+                                    <input type="text" class="form-control" placeholder="姓名" v-model="item.name">
+                                </div>
+                                <div class="form-group">
+                                    <label>学生学号</label>
+                                    <input type="text" class="form-control" placeholder="学号" v-model="item.id">
+                                </div>
+                                <div class="form-group">
+                                    <label>头像（未上传将使用默认头像，可修改）</label>
+                                    <img src="" alt="">
+                                    <input type="file" class="form-control" placeholder="头像" @change="chooseAvatar(index,event)">
+                                </div>
+                            </form>
+                        </div>
+                        <button class="btn btn-large btn-default" @click="addStudentItem">添加学生</button>
+                        <button class="btn btn-large btn-default" @click="confirmManualData">确认录入</button>
+                        <button class="btn btn-large btn-default" @click="goBack">返回</button>
+                    </section>
+
+                    <!-- 手动录入 命名名册 -->
+                    <section class="guide-box" v-if="step==='C1'">
+                        <form>
+                            <div class="form-group">
+                                <label>请为该名册命名（如:xx专业xx班名册）</label>
+                                <input type="text" class="form-control" placeholder="命名" v-model="nameListName1">
+                            </div>
+                            <button class="btn btn-large btn-default" @click="confirmManualNaming">确定</button>
+                        </form>
+                    </section>
+
+                    <!-- 随机抽取 -->
+                    <section class="roll-box" v-if="step==='2'">
+                        <div>
+                            <h5>参与抽取学生总数：{{rollNameList.length}}</h5>
+                            <h5>{{this.timer ? '正在随机筛选...' : '就是你啦！'}}</h5>
+                            <div class="info">
+                                <img class="avatar" :src="rollNameList[activeIndex] && rollNameList[activeIndex].avatar"
+                                     alt="">
+                                <div>
+                                    <h3 class="name">{{rollNameList[activeIndex] && rollNameList[activeIndex].name}}</h3>
+                                    <p>{{rollNameList[activeIndex] && rollNameList[activeIndex].id}}</p>
+                                </div>
+                            </div>
+                            <div class="btn-box">
+                                <button class="btn btn-large btn-default" @click="toggleRoll">{{this.timer ? '停止' :
+                                    '开始'}}
+                                </button>
+                                <button class="btn btn-large btn-default" @click="goBack('1')">返回菜单</button>
+                            </div>
+                        </div>
+                    </section>
+                </div>
+                <!--END Maincontent-->
+
+                <!-- START Sidebar-->
+                <div class="pane-sm sidebar">
+                    <ul class="list-group">
+                        <li class="list-group-header">
+                            <input class="form-control" type="text" placeholder="Search for someone"
+                                   v-model="searchTxt">
+                        </li>
+                        <li class="list-group-item" :class="{'z-excluded': item.isExcluded}"
+                            v-for="item,index in nameList" :key="index" @click="toggleSelect(index)">
+                            <img class="img-circle media-object pull-left" :src="item.avatar" width="32"
+                                 height="32" alt="avatar" @click.stop="openChangeAvatar(index, event)"
+                                 @error="onImageError(index)">
+                            <div class="media-body">
+                                <strong>{{item.name}}</strong>
+                                <p>{{item.id}}</p>
+                            </div>
+                        </li>
+                    </ul>
+                </div>
+                <!-- END Sidebar -->
+            </div>
+        </div>
+        <!--<footer class="toolbar toolbar-footer">
+            <h1 class="title">{{footerTitle}}</h1>
+        </footer>-->
+    </div>
+
+
+</div>
+
+<script src="../../../vendors/vue.min.js"></script>
+<script src="./index.js"></script>
+<script>
+    // You can also require other files to run in this process
+    require('../../../renderer.js')
+</script>
+</body>
+</html>
