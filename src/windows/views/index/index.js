@@ -10,7 +10,7 @@ const app = new Vue({
     data() {
         return {
             classData: {
-                details: [],
+                details: []
             },
             activeIndex: 0,
             timer: null,
@@ -23,7 +23,7 @@ const app = new Vue({
             prevStep: '1',
             step: '1',
             nameListName: '',
-            avatarPreview:'',
+            avatarPreview: '',
             avatarFile: null,
             avatarChangeIndex: 0
         }
@@ -41,40 +41,10 @@ const app = new Vue({
             return this.classData.details.filter((student) => {
                 return student.name.indexOf(searchTxt) !== -1 || String(student.id).indexOf(searchTxt) !== -1
             })
-        },
-        footerTitle() {
-            switch (this.step) {
-                case '1':
-                    return '初始界面';
-                    break;
-                case 'A':
-                    return '名册列表';
-                    break;
-                case 'B':
-                    return '导入名册';
-                    break;
-                case 'B1':
-                    return '选择方式';
-                    break;
-                case 'B2':
-                    return '请为你的名册命名';
-                    break;
-                case '2':
-                    return '名册详情';
-                    break;
-            }
         }
     },
     filters: {},
     methods: {
-        /*        readNameList() {
-                    const classDataPath = path.join(__dirname, '../../../data', 'zhiyao3', 'data.json');
-                    let classData = fs.readFileSync(classDataPath, {
-                        encoding: 'utf-8'
-                    });
-                    classData = JSON.parse(classData);
-                    this.classData = classData;
-                },*/
         toggleRoll() {
             if (this.timer) {
                 clearInterval(this.timer);
@@ -117,7 +87,7 @@ const app = new Vue({
                     name,
                     id,
                     isExcluded: false,
-                    avatar: `https://api.adorable.io/avatars/${id}.png`
+                    avatar: `../../../assets/imgs/default_avatar.jpg`
                 };
                 details.push(student)
             }
@@ -132,13 +102,13 @@ const app = new Vue({
         },
         onSelectXlsxFile(e) {
             const file = e.target.files[0];
-            if(!/\.xlsx$/.test(file.name)){
+            if (!/\.xlsx$/.test(file.name)) {
                 alert('请选择excel文件进行导入');
                 return;
             }
             this.readXlsxFile(file);
             this.prevStep = this.step;
-            this.step = 'B2';
+            this.step = 'B';
         },
         writeJSONData() {
             const descPath = path.join(__dirname, '../../../data', this.jsonData.fileDir);
@@ -179,8 +149,8 @@ const app = new Vue({
         },
         openExistClassData() {
             this.prevStep = this.step;
-            if (this.prevStep === 'B2') {
-                this.prevStep = 'B'
+            if (this.prevStep === 'B') {
+                this.prevStep = '1'
             }
             this.step = 'A';
             this.readExistNameList();
@@ -189,7 +159,8 @@ const app = new Vue({
             this.prevStep = this.step;
             this.step = 'B';
         },
-        goBack() {
+        goBack(e) {
+            e.preventDefault();
             const step = this.step;
             this.step = this.prevStep;
             this.prevStep = step;
@@ -209,42 +180,78 @@ const app = new Vue({
             this.jsonData.name = nameListName;
             this.writeJSONData();
         },
-        openChangeAvatar(index){
+        openChangeAvatar(index) {
             this.avatarChangeIndex = index;
-            this.step = 'C'
+            this.prevStep = this.step;
+            this.step = 'E'
         },
-        readAvatarImage(e){
+        readAvatarImage(e) {
             const file = e.target.files[0];
             const fileName = file.name;
-            if(!/\.(jpg|png|gif)$/.test(fileName)){
+            if (!/\.(jpg|png|gif)$/i.test(fileName)) {
                 alert('请选择图片文件');
                 return;
             }
             console.log(file)
             const fileReader = new FileReader();
-            fileReader.onload = function(e){
-               this.avatarPreview = e.target.result;
-               this.avatarFile = file;
+            fileReader.onload = function (e) {
+                this.avatarPreview = e.target.result;
+                this.avatarFile = file;
             }.bind(this);
             fileReader.readAsDataURL(file);
         },
-        async uploadImage(file){
+        uploadImage(file) {
             const filePath = file.path;
             const fileName = `${Date.now()}-${file.name}`;
             const avatarPath = `../../../assets/imgs/${fileName}`;
-            await fs.createReadStream(filePath).pipe(fs.createWriteStream(path.join(__dirname, '../../../assets/imgs', fileName)));
-            this.classData.details[this.avatarChangeIndex].avatar = avatarPath;
-            this.step = '2'
+            const readStream = fs.createReadStream(filePath);
+            const writeStrem = fs.createWriteStream(path.join(__dirname, '../../../assets/imgs', fileName));
+            readStream.pipe(writeStrem);
+            writeStrem.on('close', ()=> {
+                // 这里文件上传后img头像显示找不到？？ 文件上传需要时间
+                this.classData.details[this.avatarChangeIndex].avatar = avatarPath;
+                this.changeJSONData();
+                this.step = '2'
+            })
         },
-
-        confirmChangeAvatar(e){
+        changeJSONData(){
+            const fileDir = this.classData.fileDir;
+            const dirPath = path.join(__dirname, '../../../data', fileDir);
+            const filePath = path.join(dirPath, 'data.json');
+            let jsonData = JSON.stringify(this.classData);
+            try{
+                fs.unlinkSync(filePath);
+                fs.writeFileSync(filePath, jsonData)
+            }catch (e) {
+                console.log(e)
+            }
+        },
+        confirmChangeAvatar(e) {
             e.preventDefault();
             this.uploadImage(this.avatarFile);
 
+        },
+        /**
+         * 图片加载错误时使用默认图片
+         * @param index
+         */
+        onImageError(index){
+            this.classData.details[index].avatar = `../../../assets/imgs/default_avatar.jpg`
+        },
+        deleteNameList(){
+            const activeIndex = this.existClassData.activeIndex;
+            const fileDir = this.existClassData.result[activeIndex].fileDir;
+            const dirPath = path.join(__dirname,'../../../data', fileDir);
+            const filePath = path.join(dirPath, 'data.json');
+            try{
+                fs.unlinkSync(filePath);
+                fs.rmdirSync(dirPath);
+                this.existClassData.result.splice(activeIndex,1)
+            }catch (e) {
+                console.log(e)
+            }
         }
     },
     mounted() {
-        // this.readNameList()
-        // this.readExistNameList()
     }
 });

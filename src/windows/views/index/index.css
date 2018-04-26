@@ -1,23 +1,47 @@
-
+.window{
+    background-color: #f7f7f9;
+}
 .window-content {
     overflow-y: hidden;
 }
 
 .pane-sm {
     overflow: auto;
+    border-left: 1px solid #dcdcdc;
 }
-
+.list-group-item{
+    background-color: #fff;
+}
 .list-group-item.z-excluded {
-    background-color: #d0d0d0;
+    background-color: #f5f5f4;
 }
 header,footer{
     height: 44px;
     line-height: 44px;
 }
 
-
 /**/
-.guide-box, .way-box, .roll-box {
+.u-icon{
+    display: inline-block;
+    width: 60px;
+    height: 60px;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    border-radius: 50%;
+    background: linear-gradient(to bottom, #ff8261, #ffb16e);
+}
+.u-icon-1{
+    background: linear-gradient(to bottom, #6d90f0, #96d1f3);
+}
+.u-icon-2{
+    background: linear-gradient(to bottom, #70b14c, #76dc8f);
+}
+.u-icon-3{
+    background: linear-gradient(to bottom, #ff586c, #ff89bf);
+}
+/**/
+.guide-box, .roll-box {
     display: flex;
     justify-content: center;
     align-items: center;
@@ -25,12 +49,30 @@ header,footer{
     height: 100%;
 }
 
-.guide-box .flex-box, .way-box .flex-box {
+.guide-box .flex-box {
     display: flex;
+    justify-content: center;
+    flex-wrap: wrap;
+    width: 100%;
 }
-
+.guide-box .flex-box .hd{
+    margin-left: 20px;
+}
+.guide-box .flex-box .bd{
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    flex: 1;
+}
+.guide-box .flex-box .ft{
+    margin-right: 20px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
 .guide-box .item, .way-box .item {
-    margin: 0 40px;
+    margin: 10px;
+    flex: 0 1 40%;
 }
 .guide-box .btn-box {
     margin-top: 30px;
@@ -39,14 +81,15 @@ header,footer{
 
 /**/
 .guide-box .item {
-    width: 150px;
-    height: 150px;
+    width: 300px;
+    height: 120px;
     display: flex;
     justify-content: center;
     align-items: center;
-    background-color: #999;
+    background-color: #fff;
     text-align: center;
     position: relative;
+    transition: all .3s;
 }
 
 .guide-box .item .input-wrap, .guide-box .item .content-wrap {
@@ -63,6 +106,7 @@ header,footer{
 .guide-box .item .input-wrap {
     opacity: 0;
     cursor: pointer;
+    z-index: 1;
 }
 
 .guide-box .item .input-wrap div, .guide-box .item .input-wrap input {
@@ -72,16 +116,21 @@ header,footer{
 }
 
 .guide-box .item:hover {
-    background-color: #666;
+    transform: translateY(-6px);
+    box-shadow: 1px 4px 4px rgba(212, 212, 212, 0.45);
     cursor: pointer;
 }
 
 .guide-box .iconfont {
     font-size: 30px;
+    color: #f6fef8;
 }
-
-.guide-box .iconfont, .guide-box p {
-    color: #fff;
+.guide-box .icon-right{
+    color: #ddd;
+}
+.guide-box .desc {
+    color: #aeaeae;
+    font-size: 18px;
     cursor: pointer;
 }
 
@@ -90,16 +139,13 @@ header,footer{
     background-color: #666;
     color: #fff;
 }
-
+.table-striped tr:active:nth-child(even), tr:active{
+    background-color: #666;
+}
 
 .select-box .btn-box {
     margin-top: 30px;
     text-align: center;
-}
-
-/**/
-.way-box {
-
 }
 
 /**/

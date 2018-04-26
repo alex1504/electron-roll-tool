@@ -3,8 +3,8 @@
 <head>
     <meta charset="UTF-8">
     <title>点名工具</title>
-    <link rel="stylesheet" href="http://at.alicdn.com/t/font_642408_t7c0ek79c97iizfr.css">
     <link rel="stylesheet" href="../../../vendors/photon/css/photon.min.css">
+    <link rel="stylesheet" href="http://at.alicdn.com/t/font_642408_flddjgroxmuhxgvi.css">
     <link rel="stylesheet" href="./index.css">
 </head>
 <body>
@@ -18,26 +18,71 @@
             <div class="pane-group">
                 <!-- START Maincontent -->
                 <div class="pane">
-                    <!--打开名册 导入数据-->
+
+                    <!-- 初始导航 1 -->
                     <section class="guide-box" v-if="step==='1'">
                         <div class="flex-box">
                             <div class="item" @click="openExistClassData">
-                                <div>
-                                    <i class="iconfont icon-namelist"></i>
-                                    <p>打开名册</p>
+                                <div class="flex-box">
+                                    <div class="hd">
+                                        <div class="u-icon">
+                                            <i class="iconfont icon-namelist"></i>
+                                        </div>
+                                    </div>
+                                    <div class="bd desc">打开名册</div>
+                                    <div class="ft">
+                                        <i class="iconfont icon-right"></i>
+                                    </div>
                                 </div>
                             </div>
-                            <div class="item" @click="openImportDataWay">
-                                <div>
-                                    <i class="iconfont icon-pen"></i>
-                                    <p>导入数据</p>
+                            <div class="item" @click="">
+                                <div class="input-wrap">
+                                    <div>
+                                        <input type="file" id="excel" @change="onSelectXlsxFile">
+                                    </div>
+                                </div>
+                                <div class="content-wrap">
+                                    <div class="hd">
+                                        <div class="u-icon u-icon-1">
+                                            <i class="iconfont icon-excel"></i>
+                                        </div>
+                                    </div>
+                                    <div class="bd desc">Excel导入</div>
+                                    <div class="ft">
+                                        <i class="iconfont icon-right"></i>
+                                    </div>
                                 </div>
                             </div>
-
+                            <div class="item">
+                                <div class="flex-box">
+                                    <div class="hd">
+                                        <div class="u-icon u-icon-2">
+                                            <i class="iconfont icon-people"></i>
+                                        </div>
+                                    </div>
+                                    <div class="bd desc">手动录入</div>
+                                    <div class="ft">
+                                        <i class="iconfont icon-right"></i>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="item">
+                                <div class="flex-box">
+                                    <div class="hd">
+                                        <div class="u-icon u-icon-3">
+                                            <i class="iconfont icon-pen"></i>
+                                        </div>
+                                    </div>
+                                    <div class="bd desc">统计</div>
+                                    <div class="ft">
+                                        <i class="iconfont icon-right"></i>
+                                    </div>
+                                </div>
+                            </div>
                         </div>
                     </section>
 
-                    <!-- 选择专业班级 -->
+                    <!-- 名册列表 A -->
                     <section class="select-box" v-if="step==='A'">
                         <table class="table-striped">
                             <thead>
@@ -57,42 +102,13 @@
                         </table>
                         <div class="btn-box">
                             <button class="btn btn-large btn-default" @click="openNameList">打开名册</button>
+                            <button class="btn btn-large btn-default" @click="deleteNameList">删除名册</button>
                             <button class="btn btn-large btn-default" @click="goBack">返回</button>
                         </div>
                     </section>
 
-                    <!-- 手动录入 excel录入 -->
+                    <!-- 命名名册 -->
                     <section class="guide-box" v-if="step==='B'">
-                        <div>
-                            <div class="flex-box">
-                                <div class="item">
-                                    <div>
-                                        <i class="iconfont icon-people"></i>
-                                        <p>手动录入</p>
-                                    </div>
-                                </div>
-                                <div class="item">
-                                    <div class="content-wrap">
-                                        <div>
-                                            <i class="iconfont icon-excel"></i>
-                                            <p>从Excel导入</p>
-                                        </div>
-                                    </div>
-                                    <div class="input-wrap">
-                                        <div>
-                                            <input type="file" id="excel" @change="onSelectXlsxFile">
-                                        </div>
-                                    </div>
-                                </div>
-                            </div>
-                            <div class="btn-box">
-                                <button class="btn btn-large btn-default" @click="goBack">返回</button>
-                            </div>
-                        </div>
-                    </section>
-
-                    <!--读取成功-->
-                    <section class="guide-box" v-if="step==='B2'">
                         <form>
                             <div class="form-group">
                                 <label>读取成功，请为该名册命名（如:xx专业xx班名册）</label>
@@ -102,19 +118,21 @@
                         </form>
                     </section>
 
-                    <section class="guide-box" v-if="step==='C'">
+                    <!-- 修改头像 -->
+                    <section class="guide-box" v-if="step==='E'">
                         <form>
                             <h4>修改头像</h4>
                             <input type="file" id="avatar" @change="readAvatarImage">
                             <img width="150" :src="avatarPreview" alt="">
                             <div style="margin-top: 20px;">
                                 <button class="btn btn-large btn-default" @click="confirmChangeAvatar">确定</button>
+                                <button class="btn btn-large btn-default" @click="goBack">返回</button>
                             </div>
                         </form>
                     </section>
 
                     <!-- 手动录入 -->
-                    <!--<section class="manual-box" v-if="step==='B1'">-->
+                    <!--<section class="manual-box" v-if="step==='C'">-->
                     <!--manual-->
                     <!--</section>-->
 
@@ -150,7 +168,7 @@
                         <li class="list-group-item" :class="{'z-excluded': item.isExcluded}"
                             v-for="item,index in nameList" :key="index" @click="toggleSelect(index)">
                             <img class="img-circle media-object pull-left" :src="item.avatar" width="32"
-                                 height="32" @click.stop="openChangeAvatar(index)">
+                                 height="32" alt="avatar" @click.stop="openChangeAvatar(index)" @error="onImageError(index)">
                             <div class="media-body">
                                 <strong>{{item.name}}</strong>
                                 <p>{{item.id}}</p>
@@ -161,9 +179,9 @@
                 <!-- END Sidebar -->
             </div>
         </div>
-        <footer class="toolbar toolbar-footer">
+        <!--<footer class="toolbar toolbar-footer">
             <h1 class="title">{{footerTitle}}</h1>
-        </footer>
+        </footer>-->
     </div>
 
 
