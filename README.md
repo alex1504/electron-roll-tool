@@ -2,7 +2,7 @@
 An electron app for random extraction of name list.
 
 ## Download
-[Download link](https://github.com/alex1504/electron-roll-tool/raw/master/electron-roll-tool-win32-x64.rar)
+[Download link](https://github.com/alex1504/electron-roll-tool/releases/download/0.0.1/electron-roll-tool-win32-x64.rar)
 
 ## Preview
 ![preview](https://github.com/alex1504/electron-roll-tool/raw/master/assets/preview_1.jpg)
