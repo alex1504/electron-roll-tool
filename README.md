@@ -19,3 +19,4 @@ An electron app for random extraction of name list.
 
 ## License
 MIT © [alex1504](https://github.com/alex1504)
+

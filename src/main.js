@@ -5,6 +5,7 @@ const app = electron.app;
 
 // Window
 const IndexWindow = require('./windows/controllers/index');
+
 // const RollWindow = require('./windows/controllers/roll');
 
 
@@ -22,6 +23,7 @@ class RollTool {
         app.on('ready', () => {
             this.indexWindow = new IndexWindow();
             // this.rollWindow = new RollWindow();
+
         });
         app.on('activate', () => {
             // On OS X it's common to re-create a window in the app when the
