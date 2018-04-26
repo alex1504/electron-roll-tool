@@ -1,7 +1,8 @@
+
 const path = require('path');
 const {BrowserWindow} = require('electron');
 const url = require('url');
-
+const config = require('../../config/index');
 
 class IndexWindow {
     constructor() {
@@ -18,7 +19,9 @@ class IndexWindow {
         }));
 
         // Open the DevTools.
-        this.indexWinow.webContents.openDevTools();
+        if(config.isDebugMode){
+            this.indexWinow.webContents.openDevTools();
+        }
 
         // Emitted when the window is closed.
         this.indexWinow.on('closed', () => {

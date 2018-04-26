@@ -2,22 +2,20 @@
   "name": "electron-roll-tool",
   "version": "1.0.0",
   "description": "A minimal Electron application",
-  "main": "./src/main.js",
+  "main": "src/main.js",
   "scripts": {
-    "start": "electron ."
+    "start": "electron .",
+    "build": "electron-packager . electron-roll-tool --win --out C:/Users/dev2/Desktop/electron-roll-tool-dist --arch=x64 --version=0.0.1 --overwrite --electron-version=1.8.4"
   },
   "repository": "https://github.com/alex1504/electron-roll-tool",
   "keywords": [
-    "Electron",
-    "quick",
-    "start",
-    "tutorial",
-    "dem  o"
+    "Electron"
   ],
   "author": "GitHub",
   "license": "MIT",
   "devDependencies": {
-    "electron": "^1.8.4"
+    "electron": "^1.8.4",
+    "electron-packager": "^12.0.1"
   },
   "dependencies": {
     "moment": "^2.22.1",

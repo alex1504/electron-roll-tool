@@ -23,9 +23,11 @@ const app = new Vue({
             prevStep: '1',
             step: '1',
             nameListName: '',
+            nameListName1: '',
             avatarPreview: '',
             avatarFile: null,
-            avatarChangeIndex: 0
+            avatarChangeIndex: 0,
+            studentsForm: []
         }
     },
     computed: {
@@ -52,11 +54,11 @@ const app = new Vue({
             } else {
                 this.timer = setInterval(() => {
                     this.activeIndex = this.activeIndex + 1 > this.rollNameList.length - 1 ? 0 : this.activeIndex + 1;
-                }, 45)
+                }, 100)
             }
         },
         toggleSelect(index) {
-            if (this.timer) {
+            if (this.timer || this.step=== 'E') {
                 return;
             }
             let isExcluded = this.classData.details[index].isExcluded;
@@ -79,26 +81,29 @@ const app = new Vue({
             let jsonData = {};
             let details = [];
             let length = Object.keys(worksheet).length - 4;
+            console.log(worksheet)
+            try{
+                for (let i = 2; i < length - 1; i++) {
+                    const name = worksheet[`A${i}`].h;
+                    const id = worksheet[`B${i}`].h;
+                    let student = {
+                        name,
+                        id,
+                        isExcluded: false,
+                        avatar: `../../../assets/imgs/default_avatar.jpg`
+                    };
+                    details.push(student)
+                }
+                jsonData.fileDir = fileDir;
+                jsonData.createdAt = time;
+                jsonData.updatedAt = time;
+                jsonData.details = details;
 
-            for (let i = 2; i < length - 1; i++) {
-                const name = worksheet[`A${i}`].h;
-                const id = worksheet[`B${i}`].h;
-                let student = {
-                    name,
-                    id,
-                    isExcluded: false,
-                    avatar: `../../../assets/imgs/default_avatar.jpg`
-                };
-                details.push(student)
+                this.jsonData = jsonData;
+            }catch (e) {
+                console.log(e)
+                alert('导入失败，请检测excel格式是否正确')
             }
-            jsonData.fileDir = fileDir;
-            jsonData.createdAt = time;
-            jsonData.updatedAt = time;
-            jsonData.details = details;
-
-            this.jsonData = jsonData;
-            console.log(jsonData);
-
         },
         onSelectXlsxFile(e) {
             const file = e.target.files[0];
@@ -159,18 +164,21 @@ const app = new Vue({
             this.prevStep = this.step;
             this.step = 'B';
         },
-        goBack(e) {
-            e.preventDefault();
-            const step = this.step;
-            this.step = this.prevStep;
-            this.prevStep = step;
+        goBack(step) {
+            const stepTemp = this.step;
+            if(typeof step === 'string'){
+                this.step = step;
+            }else{
+                this.step = this.prevStep;
+            }
+            this.prevStep = stepTemp;
         },
         openNameList() {
             const activeIndex = this.existClassData.activeIndex;
             this.classData = this.existClassData.result[activeIndex];
             this.step = '2';
         },
-        confirmImport(e) {
+        confirmImportNaming(e) {
             e.preventDefault();
             const nameListName = this.nameListName.trim();
             if (!nameListName) {
@@ -180,9 +188,58 @@ const app = new Vue({
             this.jsonData.name = nameListName;
             this.writeJSONData();
         },
-        openChangeAvatar(index) {
+        async confirmManualNaming(e) {
+            e.preventDefault();
+            const nameListName = this.nameListName1.trim();
+            if (!nameListName) {
+                alert('不能为空');
+                return;
+            }
+            const now = Date.now();
+            const fileDir = String(now);
+            const time = moment(now).format('LLL');
+            let details = [];
+            this.studentsForm.forEach(student => {
+                if (!student.avatarFile) {
+                    details.push({
+                        name: student.name,
+                        id: student.id,
+                        isExcluded: false,
+                        avatar: student.avatar = '../../../assets/imgs/default_avatar.jpg'
+                    })
+                } else {
+                    this.uploadImage(student.avatarFile, (writeStream, avatarPath) => {
+                        details.push({
+                            name: student.name,
+                            id: student.id,
+                            isExcluded: false,
+                            avatar: avatarPath,
+                        })
+                    });
+                }
+            });
+            let jsonData = {
+                name: nameListName,
+                fileDir: fileDir,
+                createdAt: time,
+                updatedAt: time,
+                details: details
+            };
+            const descPath = path.join(__dirname, '../../../data', fileDir);
+            const fileName = path.join(descPath, 'data.json');
+            jsonData = JSON.stringify(jsonData);
+            fs.mkdirSync(descPath);
+            try {
+                fs.writeFileSync(fileName, jsonData);
+                this.openExistClassData();
+            } catch (e) {
+                console.log(e)
+                alert('写入失败')
+            }
+        },
+        openChangeAvatar(index,e) {
+            e.stopPropagation();
             this.avatarChangeIndex = index;
-            this.prevStep = this.step;
             this.step = 'E'
         },
         readAvatarImage(e) {
@@ -200,56 +257,80 @@ const app = new Vue({
             }.bind(this);
             fileReader.readAsDataURL(file);
         },
-        uploadImage(file) {
+        uploadImage(file, cb) {
             const filePath = file.path;
             const fileName = `${Date.now()}-${file.name}`;
             const avatarPath = `../../../assets/imgs/${fileName}`;
             const readStream = fs.createReadStream(filePath);
             const writeStrem = fs.createWriteStream(path.join(__dirname, '../../../assets/imgs', fileName));
             readStream.pipe(writeStrem);
-            writeStrem.on('close', ()=> {
-                // 这里文件上传后img头像显示找不到？？ 文件上传需要时间
-                this.classData.details[this.avatarChangeIndex].avatar = avatarPath;
-                this.changeJSONData();
-                this.step = '2'
-            })
+            cb && cb(writeStrem, avatarPath)
         },
-        changeJSONData(){
+        changeJSONData() {
             const fileDir = this.classData.fileDir;
             const dirPath = path.join(__dirname, '../../../data', fileDir);
             const filePath = path.join(dirPath, 'data.json');
             let jsonData = JSON.stringify(this.classData);
-            try{
+            try {
                 fs.unlinkSync(filePath);
                 fs.writeFileSync(filePath, jsonData)
-            }catch (e) {
+            } catch (e) {
                 console.log(e)
             }
         },
         confirmChangeAvatar(e) {
             e.preventDefault();
-            this.uploadImage(this.avatarFile);
-
+            this.uploadImage(this.avatarFile, (writeStream, avatarPath) => {
+                writeStrem.on('close', () => {
+                    this.classData.details[this.avatarChangeIndex].avatar = avatarPath;
+                    this.changeJSONData();
+                    this.step = '2'
+                })
+            });
         },
         /**
          * 图片加载错误时使用默认图片
          * @param index
          */
-        onImageError(index){
+        onImageError(index) {
             this.classData.details[index].avatar = `../../../assets/imgs/default_avatar.jpg`
         },
-        deleteNameList(){
+        deleteNameList() {
             const activeIndex = this.existClassData.activeIndex;
             const fileDir = this.existClassData.result[activeIndex].fileDir;
-            const dirPath = path.join(__dirname,'../../../data', fileDir);
+            const dirPath = path.join(__dirname, '../../../data', fileDir);
             const filePath = path.join(dirPath, 'data.json');
-            try{
+            try {
                 fs.unlinkSync(filePath);
                 fs.rmdirSync(dirPath);
-                this.existClassData.result.splice(activeIndex,1)
-            }catch (e) {
+                this.existClassData.result.splice(activeIndex, 1)
+            } catch (e) {
                 console.log(e)
             }
+        },
+        openManualPage() {
+            this.prevStep = this.step;
+            this.step = 'C'
+        },
+        addStudentItem() {
+            this.studentsForm.push({
+                name: '',
+                id: '',
+                avatarFile: null
+            })
+        },
+        chooseAvatar(index, e) {
+            const file = e.target.files[0];
+            const fileName = file.name;
+            if (!/\.(jpg|png|gif)$/i.test(fileName)) {
+                alert('请选择图片文件');
+                return;
+            }
+            this.studentsForm[index].avatarFile = file;
+        },
+        confirmManualData() {
+            this.prevStep = this.step;
+            this.step = 'C1'
         }
     },
     mounted() {
